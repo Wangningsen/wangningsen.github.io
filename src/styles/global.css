@@ -1,0 +1,99 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body {
+  @apply min-h-screen bg-slate-50 text-slate-800 antialiased dark:bg-slate-950 dark:text-slate-200;
+  background-image:
+    radial-gradient(circle at 100% 0%, rgb(79 139 133 / 0.08), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgb(148 163 184 / 0.14), transparent 40%);
+}
+
+main {
+  @apply relative;
+}
+
+a {
+  @apply transition-colors duration-200;
+}
+
+.skip-link {
+  @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-accent-700 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white;
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .surface-card {
+    @apply rounded-2xl border border-slate-200/80 bg-white/90 shadow-card backdrop-blur dark:border-slate-800 dark:bg-slate-900/70;
+  }
+
+  .pill {
+    @apply inline-flex items-center rounded-full border border-slate-300 bg-slate-100 px-3 py-1 text-xs font-medium tracking-wide text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300;
+  }
+
+  .pill-accent {
+    @apply border-accent-200 bg-accent-100 text-accent-800 dark:border-accent-700 dark:bg-accent-900/40 dark:text-accent-100;
+  }
+
+  .section-space {
+    @apply mt-16 sm:mt-20;
+  }
+
+  .section-title {
+    @apply font-serif text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100;
+  }
+
+  .section-subtitle {
+    @apply mt-3 max-w-reading text-sm leading-7 text-slate-600 dark:text-slate-400;
+  }
+
+  .hero-panel {
+    @apply surface-card p-6 sm:p-8 motion-safe:animate-[fade-in_500ms_ease-out];
+  }
+
+  .link-inline {
+    @apply text-accent-700 underline-offset-4 hover:text-accent-600 hover:underline dark:text-accent-300 dark:hover:text-accent-200;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

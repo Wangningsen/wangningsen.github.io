@@ -1,0 +1,25 @@
+﻿---
+import { footerLinks, siteConfig } from "../data/site";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-slate-200 py-10 dark:border-slate-800">
+  <div class="container-page flex flex-col gap-4 text-sm text-slate-600 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+    <p>&copy; {year} {siteConfig.name}. All rights reserved.</p>
+    <div class="flex flex-wrap gap-4">
+      {
+        footerLinks.map((item) => (
+          <a
+            href={item.href}
+            target={item.external ? "_blank" : undefined}
+            rel={item.external ? "noreferrer" : undefined}
+            class="hover:text-accent-700 dark:hover:text-accent-300"
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</footer>

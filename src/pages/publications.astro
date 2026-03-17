@@ -1,0 +1,98 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import PublicationCard from "../components/PublicationCard.astro";
+
+const publications = (await getCollection("publications")).sort((a, b) => {
+  if (a.data.year !== b.data.year) {
+    return b.data.year - a.data.year;
+  }
+
+  if (a.data.featured !== b.data.featured) {
+    return Number(b.data.featured) - Number(a.data.featured);
+  }
+
+  return a.data.title.localeCompare(b.data.title);
+});
+
+const years = [...new Set(publications.map((item) => item.data.year))];
+const types = [...new Set(publications.map((item) => item.data.type))];
+---
+
+<BaseLayout
+  title="Publications"
+  description="Publication list of Ningsen Wang with metadata, status labels, and links to resources."
+>
+  <SectionHeader
+    title="Publications"
+    description="A dedicated publication list with metadata and quick filtering by year and type."
+  />
+
+  <section class="surface-card mt-8 p-5 sm:p-6">
+    <div class="grid gap-4 sm:grid-cols-2">
+      <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="filter-year">
+        Filter by year
+        <select
+          id="filter-year"
+          class="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-accent-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+        >
+          <option value="all">All years</option>
+          {years.map((year) => <option value={year}>{year}</option>)}
+        </select>
+      </label>
+
+      <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="filter-type">
+        Filter by type
+        <select
+          id="filter-type"
+          class="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-accent-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+        >
+          <option value="all">All types</option>
+          {types.map((type) => <option value={type}>{type}</option>)}
+        </select>
+      </label>
+    </div>
+  </section>
+
+  <section class="section-space mt-8 space-y-5" id="publication-list" aria-live="polite">
+    {
+      publications.map((publication) => (
+        <div data-publication data-year={publication.data.year} data-type={publication.data.type}>
+          <PublicationCard publication={publication} />
+        </div>
+      ))
+    }
+  </section>
+
+  {
+    publications.length < 3 && (
+      <section class="section-space mt-8">
+        <p class="surface-card border-dashed p-5 text-sm text-slate-600 dark:text-slate-300">
+          TODO: Add new papers/preprints as they become available. This section is ready for incremental updates in
+          `src/content/publications/*.json`.
+        </p>
+      </section>
+    )
+  }
+
+  <script is:inline>
+    const yearSelect = document.getElementById("filter-year");
+    const typeSelect = document.getElementById("filter-type");
+    const cards = document.querySelectorAll("[data-publication]");
+
+    const applyFilter = () => {
+      const selectedYear = yearSelect?.value ?? "all";
+      const selectedType = typeSelect?.value ?? "all";
+
+      cards.forEach((card) => {
+        const matchYear = selectedYear === "all" || card.dataset.year === selectedYear;
+        const matchType = selectedType === "all" || card.dataset.type === selectedType;
+        card.classList.toggle("hidden", !(matchYear && matchType));
+      });
+    };
+
+    yearSelect?.addEventListener("change", applyFilter);
+    typeSelect?.addEventListener("change", applyFilter);
+  </script>
+</BaseLayout>

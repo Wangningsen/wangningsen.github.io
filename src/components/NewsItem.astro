@@ -1,0 +1,27 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  item: CollectionEntry<"news">;
+}
+
+const { item } = Astro.props;
+
+const formattedDate = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "short"
+}).format(item.data.date);
+---
+
+<li class="surface-card p-4">
+  <p class="text-xs font-semibold uppercase tracking-widest text-accent-700 dark:text-accent-300">{formattedDate}</p>
+  <h3 class="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">{item.data.title}</h3>
+  <p class="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{item.data.detail}</p>
+  {
+    item.data.link && (
+      <a class="mt-3 inline-block text-sm font-medium link-inline" href={item.data.link} target="_blank" rel="noreferrer">
+        Read more
+      </a>
+    )
+  }
+</li>

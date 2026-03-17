@@ -1,0 +1,22 @@
+{
+  "title": "MedVLSynther: Synthesizing High-Quality Visual Question Answering from Medical Documents with Generator-Verifier LMMs",
+  "summary": "A medical document-to-VQA synthesis pipeline designed for high-quality, verifiable multimodal supervision.",
+  "tags": [
+    "Medical AI",
+    "Multimodal VLM",
+    "VQA",
+    "Data-Centric AI"
+  ],
+  "period": "2025.07 - 2026.01",
+  "role": "Co-first author (*)",
+  "sortDate": "2026-01-01",
+  "featured": true,
+  "isPlaceholder": false,
+  "links": {
+    "paper": "https://arxiv.org/abs/2510.25867",
+    "project": "https://ucsc-vlaa.github.io/MedVLSynther/",
+    "dataset": "https://huggingface.co/MedVLSynther/datasets",
+    "model": "https://huggingface.co/MedVLSynther/models",
+    "code": "https://github.com/UCSC-VLAA/MedVLSynther/tree/main"
+  }
+}

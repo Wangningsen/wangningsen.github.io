@@ -1,0 +1,83 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const posts = (await getCollection("blog"))
+    .filter((post) => !post.data.draft)
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+  return posts.map((post, index) => ({
+    params: { slug: post.slug },
+    props: {
+      post,
+      previousPost: posts[index + 1] ?? null,
+      nextPost: posts[index - 1] ?? null
+    }
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<"blog">;
+  previousPost: CollectionEntry<"blog"> | null;
+  nextPost: CollectionEntry<"blog"> | null;
+}
+
+const { post, previousPost, nextPost } = Astro.props as Props;
+const { Content } = await render(post);
+
+const formattedDate = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "2-digit"
+}).format(post.data.date);
+---
+
+<BaseLayout title={post.data.title} description={post.data.summary}>
+  <article class="surface-card p-6 sm:p-10">
+    <header>
+      <p class="text-xs uppercase tracking-[0.2em] text-accent-700 dark:text-accent-300">{formattedDate}</p>
+      <h1 class="mt-3 font-serif text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl dark:text-slate-100">
+        {post.data.title}
+      </h1>
+      <p class="mt-4 max-w-reading text-sm leading-7 text-slate-600 dark:text-slate-300">{post.data.summary}</p>
+
+      <div class="mt-5 flex flex-wrap items-center gap-2">
+        {post.data.readingTime && <span class="pill">{post.data.readingTime}</span>}
+        {post.data.tags.map((tag) => <span class="pill">{tag}</span>)}
+        {post.data.sample && <span class="pill pill-accent">Sample / Demo Content</span>}
+      </div>
+    </header>
+
+    <div class="prose prose-slate mt-10 max-w-reading prose-headings:font-serif prose-a:text-accent-700 prose-a:no-underline hover:prose-a:underline dark:prose-invert dark:prose-a:text-accent-300">
+      <Content />
+    </div>
+  </article>
+
+  <nav class="section-space mt-8 grid gap-4 sm:grid-cols-2" aria-label="Post navigation">
+    <div>
+      {
+        previousPost && (
+          <a href={`/blog/${previousPost.slug}`} class="surface-card block p-4 hover:border-accent-300 dark:hover:border-accent-700">
+            <p class="text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400">Previous</p>
+            <p class="mt-2 font-serif text-lg text-slate-900 dark:text-slate-100">{previousPost.data.title}</p>
+          </a>
+        )
+      }
+    </div>
+    <div>
+      {
+        nextPost && (
+          <a
+            href={`/blog/${nextPost.slug}`}
+            class="surface-card block p-4 text-left hover:border-accent-300 sm:text-right dark:hover:border-accent-700"
+          >
+            <p class="text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400">Next</p>
+            <p class="mt-2 font-serif text-lg text-slate-900 dark:text-slate-100">{nextPost.data.title}</p>
+          </a>
+        )
+      }
+    </div>
+  </nav>
+</BaseLayout>

@@ -1,0 +1,167 @@
+﻿---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import PublicationCard from "../components/PublicationCard.astro";
+import NewsItem from "../components/NewsItem.astro";
+import BlogPreviewCard from "../components/BlogPreviewCard.astro";
+import { siteConfig } from "../data/site";
+
+const projects = (await getCollection("projects")).sort(
+  (a, b) => b.data.sortDate.getTime() - a.data.sortDate.getTime()
+);
+const publications = (await getCollection("publications")).sort((a, b) => {
+  if (a.data.year !== b.data.year) {
+    return b.data.year - a.data.year;
+  }
+
+  return Number(b.data.featured) - Number(a.data.featured);
+});
+const newsItems = (await getCollection("news")).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+const posts = (await getCollection("blog"))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const selectedProjects = projects.slice(0, 6);
+const selectedPublications =
+  publications.filter((item) => item.data.featured).length > 0
+    ? publications.filter((item) => item.data.featured)
+    : publications.slice(0, 3);
+const latestNews = newsItems.slice(0, 4);
+const latestPosts = posts.slice(0, 3);
+---
+
+<BaseLayout>
+  <section class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+    <div class="hero-panel">
+      <p class="text-sm uppercase tracking-[0.2em] text-accent-700 dark:text-accent-300">Medical AI Research</p>
+      <h1 class="mt-4 font-serif text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl dark:text-slate-100">
+        {siteConfig.name}
+        {
+          siteConfig.chineseName && (
+            <span class="mt-2 block text-2xl font-medium text-slate-500 dark:text-slate-400">{siteConfig.chineseName}</span>
+          )
+        }
+      </h1>
+      <p class="mt-5 max-w-reading text-lg leading-8 text-slate-700 dark:text-slate-200">{siteConfig.roleLine}</p>
+      <p class="mt-5 max-w-reading text-sm leading-8 text-slate-600 dark:text-slate-300">{siteConfig.shortBio}</p>
+
+      <div class="mt-6 flex flex-wrap gap-2">
+        {siteConfig.affiliation.map((item) => <span class="pill">{item}</span>)}
+      </div>
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        {
+          siteConfig.primaryCtas.map((cta, index) => (
+            <a
+              href={cta.href}
+              target={cta.external ? "_blank" : undefined}
+              rel={cta.external ? "noreferrer" : undefined}
+              class:list={[
+                "inline-flex items-center rounded-full px-5 py-2.5 text-sm font-medium transition",
+                index === 0
+                  ? "bg-accent-700 text-white hover:bg-accent-600"
+                  : "border border-slate-300 text-slate-700 hover:border-accent-400 hover:text-accent-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-accent-500 dark:hover:text-accent-200"
+              ]}
+            >
+              {cta.label}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="hero-panel overflow-hidden">
+      <div class="aspect-[4/5] overflow-hidden rounded-xl border border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-900">
+        <img
+          src={siteConfig.avatar}
+          alt={`Portrait of ${siteConfig.name}`}
+          class="h-full w-full object-cover"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+      <p class="mt-4 text-xs text-slate-500 dark:text-slate-400">
+        TODO: Optional profile caption (for example, photo credit or preferred pronouns).
+      </p>
+    </div>
+  </section>
+
+  <section class="section-space">
+    <SectionHeader
+      title="Research Interests"
+      description="Three ongoing pillars shaping my current research agenda."
+    />
+    <div class="grid gap-4 md:grid-cols-3">
+      {
+        siteConfig.researchInterests.map((interest) => (
+          <article class="surface-card p-5">
+            <h3 class="font-serif text-lg font-semibold text-slate-900 dark:text-slate-100">{interest.title}</h3>
+            <p class="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">{interest.description}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section-space">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <SectionHeader
+        title="Selected Projects"
+        description="Representative work and active directions. Placeholder cards are explicitly marked for future updates."
+      />
+      <a class="link-inline text-sm font-medium" href="/projects">View all projects</a>
+    </div>
+    <div class="grid gap-5 lg:grid-cols-2">
+      {selectedProjects.map((project) => <ProjectCard project={project} />)}
+    </div>
+  </section>
+
+  <section class="section-space">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <SectionHeader
+        title="Selected Publications"
+        description="Highlighted papers with links to paper, project resources, and code when available."
+      />
+      <a class="link-inline text-sm font-medium" href="/publications">View full list</a>
+    </div>
+    <div class="space-y-5">
+      {selectedPublications.map((publication) => <PublicationCard publication={publication} />)}
+    </div>
+  </section>
+
+  <section class="section-space grid gap-8 lg:grid-cols-2">
+    <div>
+      <SectionHeader
+        title="Latest News"
+        description="Recent milestones from papers, preprints, and research activity."
+      />
+      <ul class="space-y-4">
+        {latestNews.map((item) => <NewsItem item={item} />)}
+      </ul>
+    </div>
+
+    <div>
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <SectionHeader
+          title="From the Blog"
+          description="Short notes, workflows, and technical reflections in Markdown/MDX."
+        />
+        <a class="link-inline text-sm font-medium" href="/blog">View all posts</a>
+      </div>
+      <div class="space-y-4">
+        {
+          latestPosts.length > 0 ? (
+            latestPosts.map((post) => <BlogPreviewCard post={post} />)
+          ) : (
+            <p class="surface-card p-6 text-sm text-slate-600 dark:text-slate-300">No posts yet.</p>
+          )
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+

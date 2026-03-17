@@ -1,0 +1,45 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeader from "../components/SectionHeader.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+
+const projects = (await getCollection("projects")).sort((a, b) => {
+  if (a.data.featured !== b.data.featured) {
+    return Number(b.data.featured) - Number(a.data.featured);
+  }
+
+  return b.data.sortDate.getTime() - a.data.sortDate.getTime();
+});
+
+const featuredProjects = projects.filter((project) => project.data.featured);
+const otherProjects = projects.filter((project) => !project.data.featured);
+---
+
+<BaseLayout
+  title="Projects"
+  description="Research and engineering projects by Ningsen Wang, including medical AI and multimodal VLM work."
+>
+  <SectionHeader
+    title="Projects"
+    description="Structured project archive with summaries, roles, tags, and resource links."
+  />
+
+  {
+    featuredProjects.length > 0 && (
+      <section class="section-space mt-8">
+        <h2 class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-accent-700 dark:text-accent-300">Featured</h2>
+        <div class="grid gap-5 lg:grid-cols-2">
+          {featuredProjects.map((project) => <ProjectCard project={project} />)}
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section-space mt-8">
+    <h2 class="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">All Projects</h2>
+    <div class="grid gap-5 lg:grid-cols-2">
+      {otherProjects.map((project) => <ProjectCard project={project} />)}
+    </div>
+  </section>
+</BaseLayout>

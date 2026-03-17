@@ -1,0 +1,24 @@
+{
+  "title": "MedVLSynther: Synthesizing High-Quality Visual Question Answering from Medical Documents with Generator-Verifier LMMs",
+  "authors": [
+    "Xiaoke Huang*",
+    "Ningsen Wang*",
+    "Hui Liu",
+    "Xianfeng Tang",
+    "Yuyin Zhou"
+  ],
+  "venue": "ICLR",
+  "year": 2026,
+  "status": "Accepted",
+  "type": "Conference",
+  "summary": "Generator-verifier LMMs for high-quality medical VQA synthesis with verifiable multimodal supervision.",
+  "featured": true,
+  "isPlaceholder": false,
+  "links": {
+    "paper": "https://arxiv.org/abs/2510.25867",
+    "project": "https://ucsc-vlaa.github.io/MedVLSynther/",
+    "dataset": "https://huggingface.co/MedVLSynther/datasets",
+    "model": "https://huggingface.co/MedVLSynther/models",
+    "code": "https://github.com/UCSC-VLAA/MedVLSynther/tree/main"
+  }
+}
