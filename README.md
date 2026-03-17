@@ -1,4 +1,4 @@
-﻿# Ningsen Wang - Personal Academic Website
+# Ningsen Wang - Personal Academic Website
 
 Modern multi-page personal research site built with Astro + TypeScript + Tailwind CSS, designed for static deployment on GitHub Pages.
 
@@ -160,5 +160,6 @@ GitHub settings required once:
 
 - This site is fully static and GitHub Pages compatible.
 - Existing known facts from the original homepage are reused.
-- Missing details are intentionally represented with explicit `TODO` placeholders (instead of invented content).
+- Missing details are intentionally represented with explicit placeholders (instead of invented content).
+
 
