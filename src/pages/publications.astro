@@ -65,15 +65,7 @@ const types = [...new Set(publications.map((item) => item.data.type))];
     }
   </section>
 
-  {
-    publications.length < 3 && (
-      <section class="section-space mt-8">
-        <p class="surface-card border-dashed p-5 text-sm text-slate-600 dark:text-slate-300">
-          Add new papers and preprints by creating JSON files in `src/content/publications/*.json`.
-        </p>
-      </section>
-    )
-  }
+
 
   <script is:inline>
     const yearSelect = document.getElementById("filter-year");
