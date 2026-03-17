@@ -1,11 +1,10 @@
 {
   "title": "MedVLSynther: Synthesizing High-Quality Visual Question Answering from Medical Documents with Generator-Verifier LMMs",
-  "summary": "A medical document-to-VQA synthesis pipeline designed for high-quality, verifiable multimodal supervision.",
+  "summary": "[ICLR 2026 Poster]A medical document-to-VQA synthesis pipeline designed for high-quality, verifiable multimodal supervision.",
   "tags": [
     "Medical AI",
     "Multimodal VLM",
-    "VQA",
-    "Data-Centric AI"
+    "VQA"
   ],
   "period": "2025.07 - 2026.01",
   "role": "Co-first author (*)",

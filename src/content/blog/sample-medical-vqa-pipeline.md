@@ -1,35 +1,34 @@
 ---
-title: "Sample Post (Demo): Building a Reliable Medical VQA Data Pipeline"
+title: "Small Notes from Training Medical VLMs with RL in 2025"
 date: 2026-03-01
-summary: "Sample/demo placeholder post. Replace this with your real project note or lab update."
+summary: "Several observations made in my research for medical VLM RL."
 tags:
   - demo
   - medical-ai
   - data-centric
-readingTime: "4 min read"
+readingTime: "8 min read"
 sample: true
 draft: false
 ---
 
-> This is sample/demo content. Replace it with your own writing when ready.
+In July 2025, I spent a lot of time trying to train Qwen2.5-VL 3B/7B with GRPO for medical VQA and multimodal reasoning. Later that summer, while learning MedVLThinker, and then from September onward while building MedVLSynther, I ran into several small but memorable observations. None of them are clean universal laws, and I do not want to overclaim from a limited set of experiments. Still, they were useful for me, and maybe they are worth sharing for others who are also trying to do RL on vision-language models. Qwen2.5-VL is the model family I used, and GRPO is the RL method I started from.
 
-A content-driven personal website works best when each post captures one concrete idea. For research blogging, a useful structure is:
+In July 2025, my first surprise was about LoRA versus full fine-tuning. Under an R1-style setup, with standard format reward plus accuracy reward, I repeatedly found that LoRA training looked numerically healthy but the accuracy reward barely moved. The run did not crash, the logs looked normal, and other indicators were not obviously broken, but the core reward simply stayed flat. Later, after moving to a setup where full fine-tuning became feasible on stronger hardware, I finally saw a much clearer upward trend. I do not think this means LoRA is useless for VLM RL. It only means that, in my own setup, LoRA was much harder to make work than I expected. My current guess is that for VLM RL, the exact trainable subspace matters a lot more than I first assumed. Maybe it reveals that for GRPO this RL method the model requires more exploration in the state space, so that enough freedom is necessary for model performance. This is why many researchers tend to remove KL restriction from RL training.
 
-1. Problem framing
-2. Data and method choices
-3. What failed and why
-4. What changed after iteration
+A second observation came after I switched frameworks to more professional Verl and train MedVLSynther. We tested whether to freeze the visual tower, in case we might run into entropy collapse issue if the model distribution is brought to far away from the original ones. On one smaller training set, freezing the vision side slightly hurt pass@1 but seemed to help pass@16. My informal interpretation was that freezing may preserve a broader output distribution, even if it weakens the single best guess. But later, when I accidentally trained a larger run with the visual tower frozen, the drop in pass@1 became much more obvious. That made me think the answer is probably data-regime dependent. On smaller or noisier settings, freezing the vision side may behave like a kind of regularization. On larger or richer data, it can become a bottleneck instead. I would not present this as a theorem, but it did change how I think about parameter updates in VLM RL.
 
-## Example snippet
+The third observation was the one that stayed with me the most during MedVLThinker. We found that using PMC-VQA directly for GRPO training did not help us as much as using our own m23k, even though m23k is actually a text-only reasoning dataset and the downstream evaluation is still on VQA-style tasks. MedVLThinker itself was an attempt to build simple, open baselines for multimodal medical reasoning, and that experience was one reason I started taking data design much more seriously. PMC-VQA is a large and important open medical VQA resource built from biomedical literature, with 227k VQA pairs over 149k images, and it has clearly been useful for the field. At the same time, for our own RL setting, it was simply not the best fit.
 
-```python
-# Sample code block for syntax-highlighting preview
-from dataclasses import dataclass
+I am not saying that text-only data is always better than multimodal data. My much smaller and safer claim is this: for RL training, the effective learning signal may matter more than the surface form of the dataset. If a text-only dataset gives cleaner supervision for reasoning, answer selection, and reward alignment, it may outperform a larger multimodal dataset in a particular RL pipeline. In hindsight, this was one of the motivations that pushed us toward MedVLSynther, where we tried to synthesize VQA data with much stronger control over question quality, visual dependence, and option design. That project started for us in September 2025, and it has since been accepted at ICLR 2026.
 
-@dataclass
-class ExperimentNote:
-    question: str
-    takeaway: str
-```
+So what did I personally take away from these months?
 
-Use this page as a template for future updates such as reading notes, experiment retrospectives, or paper implementation logs.
+First, VLM RL seems more fragile than I expected. In LLM work, it is easy to develop the intuition that if the training script is stable and the reward is well-defined, then the model should eventually learn something useful. In my experience with medical VLMs, that intuition did not transfer cleanly. The same reward recipe could look perfectly fine in the logs and still fail to move the capability I actually cared about.
+
+Second, parameter efficiency in VLM RL may not be just a smaller copy of LLM RL. I used to think mostly in terms of how many parameters were updated. Now I think more in terms of which path from image to answer is allowed to adapt. That is a more structural view. The question is not only whether the model is trainable, but whether the trainable part covers the part of the network that the reward is actually trying to shape.
+
+Third, data quality for RL is not the same thing as data size, and not even the same thing as multimodality. For my own experiments, the more useful dataset was the one that gave a cleaner learning signal, not necessarily the one that looked more directly matched to the benchmark format. That was a humbling lesson.
+
+Finally, there is an evaluation lesson here. Most of the numbers I was optimizing were still benchmark-style results. They mattered, and I learned a lot from them, but they were still far from real clinical use. Karen Singhal’s note on Levels of Clinical Evaluation gave me a helpful vocabulary for thinking about this. The basic idea is that many of our common medical AI benchmarks are still only Level 1 evaluations, which can be useful but are narrow and far from deployment. Looking back, I think many of my own experiments fit exactly into that category. They taught me something about optimization and dataset design, but much less about whether a system would be trustworthy or helpful in a real clinical workflow.
+
+I am sharing these as small observations, not conclusions. They came from a specific combination of model family, compute budget, reward design, and medical QA tasks. Still, they were important for my own research path. In July 2025, I was mostly confused by why seemingly reasonable RL setups were not working. By September, when we started pushing harder on data synthesis and quality control, I had a much better sense of what kinds of signal I actually wanted the model to learn from. That shift in perspective was probably more valuable than any single accuracy number.
