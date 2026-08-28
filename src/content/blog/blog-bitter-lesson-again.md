@@ -9,4 +9,4 @@ sample: true
 draft: false
 ---
 
-How many experiences can avoid me taking bitter lesson again and again?
+How many experiences can avoid me taking bitter lesson again?
